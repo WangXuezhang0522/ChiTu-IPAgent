@@ -26,7 +26,7 @@
 
 <script setup>
 import { useUserStore } from "@/store/user";
-import { ref } from "vue";
+import { ref,onMounted } from "vue";
 import { useRouter } from "@/hooks/use-router";
 
 const { login } = useUserStore();
@@ -53,6 +53,17 @@ const handleLogin = () => {
         
       })
 };
+
+onMounted(() => {
+  document.querySelector(".people").addEventListener('animationend', function () {
+    this.classList.remove('p-animtion');
+    this.classList.add('p-other-animtion')
+  });
+  document.querySelector(".sphere").addEventListener('animationend', function () {
+    this.classList.remove('s-animtion');
+    this.classList.add('s-other-animtion')
+  });
+});
 </script>
 
 <style lang="scss" scoped>

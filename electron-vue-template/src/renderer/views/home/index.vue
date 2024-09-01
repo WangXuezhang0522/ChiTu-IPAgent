@@ -20,7 +20,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
+            <el-button size="mini" @click="openBrowser(scope.row)"
               >打开</el-button
             >
           </template>
@@ -64,27 +64,30 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "@/hooks/use-router";
-// import { useUserStore } from "@/store/user";
-const router = useRouter();
-
+import router from "../../router";
+import {ipcRenderer} from "electron";
 
 const tableData = ref([
   {
     name: "重庆渝北",
-    equipment: "设备1",
+    equipment: "重庆 杨家坪[100.64.0.2]",
+    username: "ykf001",
+
   },
   {
     name: "重庆渝中",
     equipment: "设备2",
+    username: "ykf002",
   },
   {
     name: "重庆巴南",
     equipment: "设备3",
+    username: "ykf003",
   },
   {
     name: "重庆江北",
     equipment: "设备4",
+    username: "ykf004",
   },
 ]);
 
@@ -97,14 +100,29 @@ const handleEdit = (index, row) => {
 };
 
 
-const username = localStorage.getItem("username");
+// const username = localStorage.getItem("username");
+const username = "优客服001";
 
 // 退出登录
 const handleLogout = () => {
   localStorage.removeItem("username");
   localStorage.removeItem("password");
   sessionStorage.removeItem("isLogin");
-  router.push({ path: "/login" }).catch((err) => {});
+  router.go({ path: "login" }).catch((err) => {
+    console.log('/login is err',err);
+  });
+};
+
+const openBrowser = (row) => {
+  console.log("openBrowser",row);
+  let sendData={
+    userDir:row.username,
+    // cmd:"start chrome --proxy-server=\"socks5://100.64.0.43:1080\" --user-data-dir=\"D:\\chitu\\user1\" \"https://wd.jtexpress.com.cn/\" \"https://tool.lu/ip/\"\n",
+    // cmd:"start chrome  \"https://wd.jtexpress.com.cn/\" \"https://tool.lu/ip/\" ",
+  }
+  ipcRenderer.invoke("open-browser",sendData).then((res) => {
+    console.log(res)
+  });
 };
 </script>
 
@@ -132,6 +150,7 @@ const handleLogout = () => {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  color: rgba(0,0,0,.6);
 }
 .Hright-bottom {
   height: 13%;
@@ -140,6 +159,7 @@ const handleLogout = () => {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  color: rgba(0,0,0,.6);
 }
 .clearfix {
   text-align: center;

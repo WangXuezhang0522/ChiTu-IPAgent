@@ -47,6 +47,7 @@ body::after {
   position: absolute;
   left: 30%;
   width: 90%;
+  top: 15%;
   z-index: 1;
   animation: sphereAnimation 2s;
   animation-fill-mode: forwards;
@@ -55,7 +56,7 @@ body::after {
 .content .left .people {
   position: absolute;
   left: -50%;
-  top: 20%;
+  top: 40%;
   width: 70%;
   z-index: 2;
 }
