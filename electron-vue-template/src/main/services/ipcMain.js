@@ -6,6 +6,7 @@ import Update from './checkupdate'
 import {updater} from './HotUpdater'
 import * as fs from "node:fs";
 import path from "path";
+import {exec} from "child_process";
 
 export default {
     Mainfunc(IsUseSysTitle) {
@@ -27,34 +28,6 @@ export default {
         })
         ipcMain.handle('window-close', (event, args) => {
             BrowserWindow.fromWebContents(event.sender)?.close()
-        })
-
-        ipcMain.handle('open-browser', (event, args) => {
-            console.log('open-browser', args)
-          /*  let arg = {
-                userDir: "D:\\chitu\\users\\user1",
-                cmd: "start chrome  \"https://wd.jtexpress.com.cn/\" \"https://tool.lu/ip/\" ",
-            }*/
-            console.log('args',args)
-            let userDir=app.getPath('userData')
-            let userPath= path.join(userDir, args.userDir)
-            console.log('userPath',userPath)
-            // 检查是否存在用户目录,如果不存在则创建
-            if (!fs.existsSync(userPath)) {
-                fs.mkdirSync(userPath, {recursive: true});
-            }
-            // 执行命令
-            const exec = require('child_process').exec;
-            // let cmd=`start chrome --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\\chitu\\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"`
-            let cmd=`start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
-            exec(cmd, function (err, stdout, stderr) {
-                    if (err) {
-                        console.log('get weather api error:' + stderr);
-                    } else {
-                        console.log('get weather api success:' + stdout);
-                    }
-                });
-
         })
         ipcMain.handle('start-download', (event, msg) => {
             downloadFile.download(BrowserWindow.fromWebContents(event.sender), msg.downloadUrL)
@@ -106,6 +79,7 @@ export default {
                 )
             }
         })
+
         let childWin = null;
         let cidArray = [];
         ipcMain.handle('open-win', (event, arg) => {
@@ -193,5 +167,52 @@ export default {
                 }
             })
         })
+
+        // 打开外部浏览器 并且打开xedge下载页面
+        ipcMain.handle('open-xedge', async (event, arg) => {
+          let url='https://xedge.cc/download'
+            //打开外部浏览器
+            const {shell} = require('electron')
+            shell.openExternal(url)
+        })
+
+        // 打开外部浏览器 并且打开chrome下载页面
+        ipcMain.handle('open-chrome', async (event, arg) => {
+          let url='https://www.google.com/chrome/browser-tools/'
+            //打开外部浏览器
+            const {shell} = require('electron')
+            shell.openExternal(url)
+        })
+
+        // 打开外部浏览器, 并且附加启动参数
+        ipcMain.handle('open-browser', (event, args) => {
+            console.log('open-browser', args)
+            let userDir=app.getPath('userData')
+            let userPath= path.join(userDir, args.network_name_dir)
+            console.log('userPath',userPath)
+            // 检查是否存在用户目录,如果不存在则创建
+            if (!fs.existsSync(userPath)) {
+                fs.mkdirSync(userPath, {recursive: true});
+            }
+            // 执行命令
+            const exec = require('child_process').exec;
+
+            // 如果外部传入了 chromeExecPath 则使用下面的启动命令
+            // start "C:\Program Files\Google\Chrome\Application\chrome.exe" --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\chitu\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"
+            // 如果没有传入 chromeExecPath 则使用下面的启动命令
+            // start chrome --proxy-server="socks5://100.64.0.43:1080" --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\chitu\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"
+
+            let cmd=`start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
+            exec(cmd, function (err, stdout, stderr) {
+                if (err) {
+                    console.log('get weather api error:' + stderr);
+                } else {
+                    console.log('get weather api success:' + stdout);
+                }
+            });
+
+        })
+
+
     }
 }

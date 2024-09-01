@@ -40,13 +40,28 @@
       </div>
       <div class="Hright-senter">
         <div>
-          <span>设备总量:</span>
-          <el-tag> {{ requimentTotal }}</el-tag>
+          <span>chrome:</span>
+          <el-tag> 已安装</el-tag>
+
+<!--          <el-tooltip content="请先安装chrome浏览器" placement="top">-->
+<!--            <el-tag type="danger" @click="openChrome" style="cursor: pointer">去安装</el-tag>-->
+<!--          </el-tooltip>-->
+
         </div>
         <div>
-          <span>账号总量:</span>
-          <el-tag>{{ userRequiment }}</el-tag>
+          <span>组网服务:</span>
+
+<!--          <el-tooltip content="xedge组网服务已安装" placement="top">
+            <el-tag type="success">正常</el-tag>
+          </el-tooltip>-->
+          <el-tooltip content="请先安装并登录xedge组网服务" placement="top">
+            <el-tag type="danger" @click="openXedge" style="cursor: pointer">去安装</el-tag>
+          </el-tooltip>
         </div>
+      </div>
+      <div class="chrome-exec-path">
+        <span style="color: rgba(0,0,0,.7)">chrome执行路径:</span>
+        <el-input  v-model="chromeExecPath"></el-input>
       </div>
       <div class="Hright-bottom">
         <!-- 当前账号 -->
@@ -71,26 +86,30 @@ const tableData = ref([
   {
     name: "重庆渝北",
     equipment: "重庆 杨家坪[100.64.0.2]",
-    username: "ykf001",
-
+    network_name_dir: "ykf001",
+    proxy: "100.64.0.1",
   },
   {
     name: "重庆渝中",
     equipment: "设备2",
-    username: "ykf002",
+    network_name_dir: "ykf002",
+    proxy: "100.64.0.1",
   },
   {
     name: "重庆巴南",
     equipment: "设备3",
-    username: "ykf003",
+    network_name_dir: "ykf003",
+    proxy: "100.64.0.1",
   },
   {
     name: "重庆江北",
     equipment: "设备4",
-    username: "ykf004",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
   },
 ]);
 
+const chromeExecPath = ref("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
 const requimentTotal = ref(100);
 const userRequiment = ref(100);
 const announcement = ref("暂无公告");
@@ -113,14 +132,28 @@ const handleLogout = () => {
   });
 };
 
+// 打开浏览器
 const openBrowser = (row) => {
   console.log("openBrowser",row);
   let sendData={
-    userDir:row.username,
-    // cmd:"start chrome --proxy-server=\"socks5://100.64.0.43:1080\" --user-data-dir=\"D:\\chitu\\user1\" \"https://wd.jtexpress.com.cn/\" \"https://tool.lu/ip/\"\n",
-    // cmd:"start chrome  \"https://wd.jtexpress.com.cn/\" \"https://tool.lu/ip/\" ",
+    ...row,
+    chromeExecPath:chromeExecPath.value
   }
   ipcRenderer.invoke("open-browser",sendData).then((res) => {
+    console.log(res)
+  });
+};
+
+// 打开xedge安装地址
+const openXedge = () => {
+  ipcRenderer.invoke("open-xedge").then((res) => {
+    console.log(res)
+  });
+};
+
+// 打开chrome安装地址
+const openChrome = () => {
+  ipcRenderer.invoke("open-chrome").then((res) => {
     console.log(res)
   });
 };
