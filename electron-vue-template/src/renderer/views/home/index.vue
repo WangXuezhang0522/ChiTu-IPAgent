@@ -51,26 +51,51 @@
         </el-card>
       </div>
       <div class="Hright-senter">
-        <div>
+        <div class="Chrome-box">
           <span>chrome:</span>
-          <el-tag v-if="isChromeInstalled"> 已安装</el-tag>
+          <!-- <el-tag v-if="isChromeInstalled"> 已安装</el-tag>
 
           <el-tooltip v-else content="请先安装chrome浏览器" placement="top">
             <el-tag type="danger" @click="openChrome" style="cursor: pointer"
-              >去安装</el-tag>
-          </el-tooltip>
-        </div>
-        <div>
-          <span>组网服务:</span>
-
-          <!--          <el-tooltip content="xedge组网服务已安装" placement="top">
-            <el-tag type="success">正常</el-tag>
-          </el-tooltip>-->
-          <el-tooltip content="请先安装并登录xedge组网服务" placement="top">
-            <el-tag type="danger" @click="openXedge" style="cursor: pointer"
               >去安装</el-tag
             >
-          </el-tooltip>
+          </el-tooltip> -->
+          <transition name="fade" mode="out-in">
+            <div :key="isChromeInstalled">
+              <el-tag v-if="isChromeInstalled">已安装</el-tag>
+              <el-tooltip v-else content="请先安装chrome浏览器" placement="top">
+                <el-tag
+                  type="danger"
+                  @click="openChrome"
+                  style="cursor: pointer"
+                  >去安装</el-tag
+                >
+              </el-tooltip>
+            </div>
+          </transition>
+        </div>
+        <div class="Chrome-box">
+          <span>组网服务:</span>
+          <transition name="fade" mode="out-in">
+            <div :key="isXedgeInstalled">
+              <el-tooltip
+                content="xedge组网服务已安装"
+                v-if="isXedgeInstalled"
+                placement="top"
+              >
+                <el-tag type="success">正常</el-tag>
+              </el-tooltip>
+              <el-tooltip
+                content="请先安装并登录xedge组网服务"
+                v-else
+                placement="top"
+              >
+                <el-tag type="danger" @click="openXedge" style="cursor: pointer"
+                  >去安装</el-tag
+                >
+              </el-tooltip>
+            </div>
+          </transition>
         </div>
       </div>
       <div class="chrome-exec-path">
@@ -199,19 +224,32 @@ const handleLogout = () => {
 //在页面加载时就判断Chrome是否安装,这是一个异步函数
 const checkChromeInstalled = async () => {
   try {
-    const isInstalled = await ipcRenderer.invoke('is-chrome-installed');
-    console.log('Chrome 是否安装:', isInstalled);
+    const isInstalled = await ipcRenderer.invoke("is-chrome-installed");
+    console.log("Chrome 是否安装:", isInstalled);
     return isInstalled;
   } catch (error) {
-    console.error('检查 Chrome 安装状态时出错:', error);
+    console.error("检查 Chrome 安装状态时出错:", error);
     return false; // 出错时假设未安装
   }
 };
-
-  const isChromeInstalled = ref(false);
-  onMounted(async () => {
-    isChromeInstalled.value = await checkChromeInstalled();
-  });
+//判断xedge是否安装is-xedge-installed
+const checkXedgeInstalled = async () => {
+  try {
+    const isInstalled = await ipcRenderer.invoke("is-xedge-installed");
+    console.log("xedge 是否安装:", isInstalled);
+    return isInstalled;
+  } catch (error) {
+    console.error("检查 xedge 安装状态时出错:", error);
+    return false; // 出错时假设未安装
+  }
+};
+//判断是否安装
+const isXedgeInstalled = ref(false);
+const isChromeInstalled = ref(false);
+onMounted(async () => {
+  isChromeInstalled.value = await checkChromeInstalled();
+  isXedgeInstalled.value = await checkXedgeInstalled();
+});
 
 // 打开浏览器
 const openBrowser = (row) => {
@@ -288,5 +326,17 @@ const openChrome = () => {
 }
 .reload-btn {
   float: left;
+}
+.Chrome-box {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
 }
 </style>

@@ -168,6 +168,22 @@ export default {
                 }
             })
         })
+        //判断是否安装了xedge,xedge进程是否存在
+        ipcMain.handle('is-xedge-installed', async (event) => {
+            return new Promise((resolve) => {
+                exec('tasklist', (error, stdout) => {
+                    if (error) {
+                        resolve(false);
+                    } else {
+                        if (stdout.includes('xedge.exe')) {
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    }
+                });
+            });
+        });
 
         // 打开外部浏览器 并且打开xedge下载页面
         ipcMain.handle('open-xedge', async (event, arg) => {
