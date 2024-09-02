@@ -55,10 +55,9 @@
           <span>chrome:</span>
           <el-tag v-if="isChromeInstalled"> 已安装</el-tag>
 
-          <el-tooltip v-if="!isChromeInstalled" content="请先安装chrome浏览器" placement="top">
+          <el-tooltip v-else content="请先安装chrome浏览器" placement="top">
             <el-tag type="danger" @click="openChrome" style="cursor: pointer"
-              >去安装</el-tag
-            >
+              >去安装</el-tag>
           </el-tooltip>
         </div>
         <div>
@@ -197,15 +196,22 @@ const handleLogout = () => {
     console.log("/login is err", err);
   });
 };
-//在页面加载时就判断Chrome是否安装
+//在页面加载时就判断Chrome是否安装,这是一个异步函数
+const checkChromeInstalled = async () => {
+  try {
+    const isInstalled = await ipcRenderer.invoke('is-chrome-installed');
+    console.log('Chrome 是否安装:', isInstalled);
+    return isInstalled;
+  } catch (error) {
+    console.error('检查 Chrome 安装状态时出错:', error);
+    return false; // 出错时假设未安装
+  }
+};
 
-  const isChromeInstalled = () => {
-    ipcRenderer.invoke("is-chrome-installed").then((res) => {
-      console.log(res);
-    });
-  };
-
-  
+  const isChromeInstalled = ref(false);
+  onMounted(async () => {
+    isChromeInstalled.value = await checkChromeInstalled();
+  });
 
 // 打开浏览器
 const openBrowser = (row) => {

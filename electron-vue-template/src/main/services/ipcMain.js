@@ -193,13 +193,12 @@ export default {
                 // 检查Chrome是否存在
                 exec(`"${chromePath}" --version`, (error) => {
                     if (error) {
-                        // Chrome未安装
+                        // Chrome未安装则返回一个false
                         resolve(false);
-                        event.returnValue = false;
                     } else {
                         // Chrome已安装
                         resolve(true);
-                        event.returnValue = true;
+                        // event.returnValue = false;
                     }
                 });
             });
