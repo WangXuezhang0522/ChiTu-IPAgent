@@ -1,9 +1,11 @@
 <template>
   <div class="content">
     <div class="Hleft">
+      <!-- <el-button class="reload-btn">刷新</el-button> -->
       <el-table
         :data="tableData"
         style="width: 100%; height: 100%; border-radius: 2%"
+        height="720"
       >
         <el-table-column label="网点名称" width="300">
           <template slot-scope="scope">
@@ -25,6 +27,16 @@
             >
           </template>
         </el-table-column>
+        <el-table-column align="right">
+          <template slot="header">
+            <el-button
+              @click="reloadData"
+              icon="el-icon-refresh-right"
+              size="small"
+              circle
+            ></el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div class="Hright">
@@ -43,25 +55,32 @@
           <span>chrome:</span>
           <el-tag> 已安装</el-tag>
 
-<!--          <el-tooltip content="请先安装chrome浏览器" placement="top">-->
-<!--            <el-tag type="danger" @click="openChrome" style="cursor: pointer">去安装</el-tag>-->
-<!--          </el-tooltip>-->
-
+          <!--          <el-tooltip content="请先安装chrome浏览器" placement="top">-->
+          <!--            <el-tag type="danger" @click="openChrome" style="cursor: pointer">去安装</el-tag>-->
+          <!--          </el-tooltip>-->
         </div>
         <div>
           <span>组网服务:</span>
 
-<!--          <el-tooltip content="xedge组网服务已安装" placement="top">
+          <!--          <el-tooltip content="xedge组网服务已安装" placement="top">
             <el-tag type="success">正常</el-tag>
           </el-tooltip>-->
           <el-tooltip content="请先安装并登录xedge组网服务" placement="top">
-            <el-tag type="danger" @click="openXedge" style="cursor: pointer">去安装</el-tag>
+            <el-tag type="danger" @click="openXedge" style="cursor: pointer"
+              >去安装</el-tag
+            >
           </el-tooltip>
         </div>
       </div>
       <div class="chrome-exec-path">
-        <span style="color: rgba(0,0,0,.7)">chrome执行路径:</span>
-        <el-input  v-model="chromeExecPath"></el-input>
+        <el-tooltip
+          content="右键点击Chrome图标-> 选择“属性”->查看“目标”字段，获取可执行路径"
+          placement="top"
+        >
+          <span style="color: rgba(0, 0, 0, 0.7)">chrome执行路径:</span>
+        </el-tooltip>
+          <el-input v-model="chromeExecPath"></el-input>
+       
       </div>
       <div class="Hright-bottom">
         <!-- 当前账号 -->
@@ -80,7 +99,7 @@
 <script setup>
 import { ref } from "vue";
 import router from "../../router";
-import {ipcRenderer} from "electron";
+import { ipcRenderer } from "electron";
 
 const tableData = ref([
   {
@@ -107,9 +126,83 @@ const tableData = ref([
     network_name_dir: "ykf004",
     proxy: "100.64.0.1",
   },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备4",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
+  {
+    name: "重庆江北",
+    equipment: "设备5",
+    network_name_dir: "ykf004",
+    proxy: "100.64.0.1",
+  },
 ]);
 
-const chromeExecPath = ref("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
+const chromeExecPath = ref(
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+);
 const requimentTotal = ref(100);
 const userRequiment = ref(100);
 const announcement = ref("暂无公告");
@@ -117,7 +210,11 @@ const announcement = ref("暂无公告");
 const handleEdit = (index, row) => {
   console.log(index, row);
 };
-
+//刷新数据
+const reloadData = () => {
+  //重新获取数据
+  console.log("reloadData");
+};
 
 // const username = localStorage.getItem("username");
 const username = "优客服001";
@@ -128,33 +225,33 @@ const handleLogout = () => {
   localStorage.removeItem("password");
   sessionStorage.removeItem("isLogin");
   router.go({ path: "login" }).catch((err) => {
-    console.log('/login is err',err);
+    console.log("/login is err", err);
   });
 };
 
 // 打开浏览器
 const openBrowser = (row) => {
-  console.log("openBrowser",row);
-  let sendData={
+  console.log("openBrowser", row);
+  let sendData = {
     ...row,
-    chromeExecPath:chromeExecPath.value
-  }
-  ipcRenderer.invoke("open-browser",sendData).then((res) => {
-    console.log(res)
+    chromeExecPath: chromeExecPath.value,
+  };
+  ipcRenderer.invoke("open-browser", sendData).then((res) => {
+    console.log(res);
   });
 };
 
 // 打开xedge安装地址
 const openXedge = () => {
   ipcRenderer.invoke("open-xedge").then((res) => {
-    console.log(res)
+    console.log(res);
   });
 };
 
 // 打开chrome安装地址
 const openChrome = () => {
   ipcRenderer.invoke("open-chrome").then((res) => {
-    console.log(res)
+    console.log(res);
   });
 };
 </script>
@@ -177,27 +274,35 @@ const openChrome = () => {
   // border: 1px solid #000;
 }
 .Hright-senter {
-  height: 15%;
+  height: 10%;
   // border: 1px solid #000;
-  margin-top: 5px;
+  // margin-top: 5px;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  color: rgba(0,0,0,.6);
+  color: rgba(0, 0, 0, 0.6);
+}
+.chrome-exec-path {
+  height: 10%;
+  width: 87%;
+  margin-left: 22px;
 }
 .Hright-bottom {
-  height: 13%;
-  margin-top: 5px;
+  height: 10%;
+  // margin-top: 5px;
   // border: 1px solid #000;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  color: rgba(0,0,0,.6);
+  color: rgba(0, 0, 0, 0.6);
 }
 .clearfix {
   text-align: center;
 }
 .box-card {
   height: 100%;
+}
+.reload-btn {
+  float: left;
 }
 </style>
