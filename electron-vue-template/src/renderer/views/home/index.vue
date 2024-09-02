@@ -53,11 +53,13 @@
       <div class="Hright-senter">
         <div>
           <span>chrome:</span>
-          <el-tag> 已安装</el-tag>
+          <el-tag v-if="isChromeInstalled"> 已安装</el-tag>
 
-          <!--          <el-tooltip content="请先安装chrome浏览器" placement="top">-->
-          <!--            <el-tag type="danger" @click="openChrome" style="cursor: pointer">去安装</el-tag>-->
-          <!--          </el-tooltip>-->
+          <el-tooltip v-if="!isChromeInstalled" content="请先安装chrome浏览器" placement="top">
+            <el-tag type="danger" @click="openChrome" style="cursor: pointer"
+              >去安装</el-tag
+            >
+          </el-tooltip>
         </div>
         <div>
           <span>组网服务:</span>
@@ -79,8 +81,7 @@
         >
           <span style="color: rgba(0, 0, 0, 0.7)">chrome执行路径:</span>
         </el-tooltip>
-          <el-input v-model="chromeExecPath"></el-input>
-       
+        <el-input v-model="chromeExecPath"></el-input>
       </div>
       <div class="Hright-bottom">
         <!-- 当前账号 -->
@@ -97,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import router from "../../router";
 import { ipcRenderer } from "electron";
 
@@ -164,36 +165,6 @@ const tableData = ref([
   },
   {
     name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
     equipment: "设备5",
     network_name_dir: "ykf004",
     proxy: "100.64.0.1",
@@ -203,8 +174,6 @@ const tableData = ref([
 const chromeExecPath = ref(
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
 );
-const requimentTotal = ref(100);
-const userRequiment = ref(100);
 const announcement = ref("暂无公告");
 
 const handleEdit = (index, row) => {
@@ -228,6 +197,15 @@ const handleLogout = () => {
     console.log("/login is err", err);
   });
 };
+//在页面加载时就判断Chrome是否安装
+
+  const isChromeInstalled = () => {
+    ipcRenderer.invoke("is-chrome-installed").then((res) => {
+      console.log(res);
+    });
+  };
+
+  
 
 // 打开浏览器
 const openBrowser = (row) => {

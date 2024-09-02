@@ -1,12 +1,13 @@
-import {ipcMain, dialog, BrowserWindow, app} from 'electron'
+import { ipcMain, dialog, BrowserWindow, app } from 'electron'
 import Server from '../server/index'
-import {winURL} from '../config/StaticPath'
+import { winURL } from '../config/StaticPath'
 import downloadFile from './downloadFile'
 import Update from './checkupdate'
-import {updater} from './HotUpdater'
+import { updater } from './HotUpdater'
 import * as fs from "node:fs";
 import path from "path";
-import {exec} from "child_process";
+import { exec } from "child_process";
+import os from "os";
 
 export default {
     Mainfunc(IsUseSysTitle) {
@@ -20,10 +21,10 @@ export default {
         ipcMain.handle('window-max', async (event, args) => {
             if (BrowserWindow.fromWebContents(event.sender)?.isMaximized()) {
                 BrowserWindow.fromWebContents(event.sender)?.unmaximize()
-                return {status: false}
+                return { status: false }
             } else {
                 BrowserWindow.fromWebContents(event.sender)?.maximize()
-                return {status: true}
+                return { status: true }
             }
         })
         ipcMain.handle('window-close', (event, args) => {
@@ -83,7 +84,7 @@ export default {
         let childWin = null;
         let cidArray = [];
         ipcMain.handle('open-win', (event, arg) => {
-            let cidJson = {id: null, url: ''}
+            let cidJson = { id: null, url: '' }
             let data = cidArray.filter((currentValue) => {
                 if (currentValue.url === arg.url) {
                     return currentValue
@@ -170,29 +171,57 @@ export default {
 
         // 打开外部浏览器 并且打开xedge下载页面
         ipcMain.handle('open-xedge', async (event, arg) => {
-          let url='https://xedge.cc/download'
+            let url = 'https://xedge.cc/download'
             //打开外部浏览器
-            const {shell} = require('electron')
+            const { shell } = require('electron')
             shell.openExternal(url)
         })
+        //判断是否安装了chrome
+        ipcMain.handle('is-chrome-installed', async (event) => {
+            return new Promise((resolve) => {
+                let chromePath;
+
+                // 根据操作系统设置Chrome的路径
+                if (os.platform() === 'win32') {
+                    chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+                } else if (os.platform() === 'darwin') {
+                    chromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+                } else {
+                    chromePath = '/usr/bin/google-chrome'; // Linux常见路径
+                }
+
+                // 检查Chrome是否存在
+                exec(`"${chromePath}" --version`, (error) => {
+                    if (error) {
+                        // Chrome未安装
+                        resolve(false);
+                        event.returnValue = false;
+                    } else {
+                        // Chrome已安装
+                        resolve(true);
+                        event.returnValue = true;
+                    }
+                });
+            });
+        });
 
         // 打开外部浏览器 并且打开chrome下载页面
         ipcMain.handle('open-chrome', async (event, arg) => {
-          let url='https://www.google.com/chrome/browser-tools/'
+            let url = 'https://www.google.com/chrome/browser-tools/'
             //打开外部浏览器
-            const {shell} = require('electron')
+            const { shell } = require('electron')
             shell.openExternal(url)
         })
 
         // 打开外部浏览器, 并且附加启动参数
         ipcMain.handle('open-browser', (event, args) => {
             console.log('open-browser', args)
-            let userDir=app.getPath('userData')
-            let userPath= path.join(userDir, args.network_name_dir)
-            console.log('userPath',userPath)
+            let userDir = app.getPath('userData')
+            let userPath = path.join(userDir, args.network_name_dir)
+            console.log('userPath', userPath)
             // 检查是否存在用户目录,如果不存在则创建
             if (!fs.existsSync(userPath)) {
-                fs.mkdirSync(userPath, {recursive: true});
+                fs.mkdirSync(userPath, { recursive: true });
             }
             // 执行命令
             const exec = require('child_process').exec;
@@ -202,7 +231,7 @@ export default {
             // 如果没有传入 chromeExecPath 则使用下面的启动命令
             // start chrome --proxy-server="socks5://100.64.0.43:1080" --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\chitu\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"
 
-            let cmd=`start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
+            let cmd = `start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
             exec(cmd, function (err, stdout, stderr) {
                 if (err) {
                     console.log('get weather api error:' + stderr);
@@ -212,6 +241,7 @@ export default {
             });
 
         })
+
 
 
     }
