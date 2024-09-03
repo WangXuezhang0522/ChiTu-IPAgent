@@ -1,13 +1,21 @@
 'use strict'
 
-import { app } from 'electron'
+import { app ,Tray,nativeImage,Menu} from 'electron'
 import initWindow from './services/windowManager'
 import DisableButton from './config/DisableButton'
 import electronDevtoolsInstaller, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import trayWindow from './services/trayWindow'
 
-function onAppReady () {
+let tray = null
+
+function onAppReady() {
   initWindow()
   DisableButton.Disablef12()
+  
+  // 托盘模式
+  tray = new trayWindow()
+  tray.initTray()
+  
   if (process.env.NODE_ENV === 'development') {
     electronDevtoolsInstaller(VUEJS_DEVTOOLS)
       .then((name) => console.log(`installed: ${name}`))
@@ -25,7 +33,9 @@ app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
 
 app.on('window-all-closed', () => {
   // 所有平台均为所有窗口关闭就退出软件
-  app.quit()
+  // app.quit()
+  // 托盘模式下，所有窗口关闭时，隐藏主窗口
+  app.hide()
 })
 app.on('browser-window-created', () => {
   console.log('window-created')

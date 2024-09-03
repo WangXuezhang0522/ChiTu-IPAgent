@@ -1,7 +1,6 @@
 <template>
   <div class="content">
     <div class="Hleft">
-      <!-- <el-button class="reload-btn">刷新</el-button> -->
       <el-table
         :data="tableData"
         style="width: 100%; height: 100%; border-radius: 2%"
@@ -54,7 +53,6 @@
         <div class="Chrome-box">
           <span>chrome:</span>
           <!-- <el-tag v-if="isChromeInstalled"> 已安装</el-tag>
-
           <el-tooltip v-else content="请先安装chrome浏览器" placement="top">
             <el-tag type="danger" @click="openChrome" style="cursor: pointer"
               >去安装</el-tag
