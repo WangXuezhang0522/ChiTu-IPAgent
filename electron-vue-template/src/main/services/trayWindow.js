@@ -10,7 +10,7 @@ class TrayWindow {
     initTray() {
 
         // 托盘图标
-        const iconPath = path.join(__static, '/icons/icon.ico');
+        const iconPath = path.join(__static, '/icons/icon.png');
         const icon = nativeImage.createFromPath(iconPath);
         this.tray = new Tray(icon);
 

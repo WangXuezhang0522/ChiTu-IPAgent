@@ -109,7 +109,7 @@ export default {
                     //窗口大小是否可调整
                     resizable: arg?.resizable ?? false,
                     //窗口的最小高度
-                    minWidth: arg?.minWidth || 842,
+                    minWidth: arg?.minWidth || 642,
                     show: arg?.show ?? false,
                     //窗口透明度
                     opacity: arg?.opacity || 1.0,
@@ -122,7 +122,8 @@ export default {
                         //使用webview标签 必须开启
                         webviewTag: arg?.webview ?? false,
                         // 如果是开发模式可以使用devTools
-                        devTools: process.env.NODE_ENV === 'development',
+                        devTools: process.env.NODE_ENV === 'development',//Q:如何关闭开发者工具A
+                        
                         // 在macos中启用橡皮动画
                         scrollBounce: process.platform === 'darwin',
                         // 临时修复打开新窗口报错
