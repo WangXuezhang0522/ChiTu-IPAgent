@@ -16,7 +16,7 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     height: 800,
     useContentSize: true,
-    width: 1700,
+    width: 1366,
     minWidth: 1366,
     show: false,
     frame: IsUseSysTitle,
@@ -26,8 +26,8 @@ function createMainWindow() {
       nodeIntegration: true,
       webSecurity: false,
       // 如果是开发模式可以使用devTools
-      devTools: process.env.NODE_ENV === 'development' || openDevTools,
-      // devTools: true,
+      // devTools: process.env.NODE_ENV === 'development' || openDevTools,
+      devTools: false,
       // 在macos中启用橡皮动画
       scrollBounce: process.platform === 'darwin'
     }
