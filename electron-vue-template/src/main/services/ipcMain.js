@@ -246,15 +246,38 @@ export default {
             // start "C:\Program Files\Google\Chrome\Application\chrome.exe" --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\chitu\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"
             // 如果没有传入 chromeExecPath 则使用下面的启动命令
             // start chrome --proxy-server="socks5://100.64.0.43:1080" --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\chitu\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"
-
-            let cmd = `start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
-            exec(cmd, function (err, stdout, stderr) {
-                if (err) {
-                    console.log('get weather api error:' + stderr);
-                } else {
-                    console.log('get weather api success:' + stdout);
-                }
-            });
+            //判断当前系统是win还是mac或者linux
+            if (process.platform === 'darwin') {
+                //mac
+                let cmd = `open -na "Google Chrome" --args --user-data-dir="${userPath}" "https://tool.lu/ip/"`
+                exec(cmd, function (err, stdout, stderr) {
+                    if (err) {
+                        console.log('get weather api error:' + stderr);
+                    } else {
+                        console.log('get weather api success:' + stdout);
+                    }
+                });
+            } else if (process.platform === 'linux') {
+                //linux
+                let cmd = `google-chrome --user-data-dir="${userPath}" "https://tool.lu/ip/"`
+                exec(cmd, function (err, stdout, stderr) {
+                    if (err) {
+                        console.log('get weather api error:' + stderr);
+                    } else {
+                        console.log('get weather api success:' + stdout);
+                    }
+                });
+            }else{
+                //win
+                let cmd = `start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
+                exec(cmd, function (err, stdout, stderr) {
+                    if (err) {
+                        console.log('get weather api error:' + stderr);
+                    } else {
+                        console.log('get weather api success:' + stdout);
+                    }
+                });
+            }
 
         })
 
