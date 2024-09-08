@@ -41,12 +41,12 @@ app.on('browser-window-created', () => {
   console.log('window-created')
 })
 
-//关闭开发者工具
-app.on('web-contents-created', (event, contents) => {
-  contents.on('devtools-opened', () => {
-    contents.closeDevTools()
-  })
-})
+// //关闭开发者工具
+// app.on('web-contents-created', (event, contents) => {
+//   contents.on('devtools-opened', () => {
+//     contents.closeDevTools()
+//   })
+// })
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {

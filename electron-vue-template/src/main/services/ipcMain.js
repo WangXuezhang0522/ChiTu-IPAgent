@@ -280,6 +280,34 @@ export default {
             }
 
         })
+        //获取设备MAC地址并返回,适配windows和mac
+        ipcMain.handle('getMac', async (event, args) => {
+            return new Promise((resolve) => {
+                let mac;
+                if (process.platform === 'darwin') {
+                    //mac
+                    exec('ifconfig en0 | grep ether | awk \'{print $2}\'', (error, stdout) => {
+                        if (error) {
+                            resolve('获取mac地址失败');
+                        } else {
+                            mac = stdout.replace(/\n/g, '');
+                            resolve(mac);
+                        }
+                    });
+                } else {
+                    //windows
+                    exec('ipconfig /all | find "Physical Address"', (error, stdout) => {
+                        if (error) {
+                            resolve('获取mac地址失败');
+                        } else {
+                            mac = stdout.replace(/\n/g, '').replace(/ /g, '').split(':')[1];
+                            resolve(mac);
+                        }
+                    });
+                }
+            });
+        });
+        
 
 
 

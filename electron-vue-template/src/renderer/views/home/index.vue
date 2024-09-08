@@ -51,13 +51,7 @@
       </div>
       <div class="Hright-senter">
         <div class="Chrome-box">
-          <span>chrome:</span>
-          <!-- <el-tag v-if="isChromeInstalled"> 已安装</el-tag>
-          <el-tooltip v-else content="请先安装chrome浏览器" placement="top">
-            <el-tag type="danger" @click="openChrome" style="cursor: pointer"
-              >去安装</el-tag
-            >
-          </el-tooltip> -->
+          <span>Chrome:</span>
           <transition name="fade" mode="out-in">
             <div :key="isChromeInstalled">
               <el-tag v-if="isChromeInstalled">已安装</el-tag>
@@ -97,13 +91,14 @@
         </div>
       </div>
       <div class="chrome-exec-path">
-        <el-tooltip
-          content="右键点击Chrome图标-> 选择“属性”->查看“目标”字段，获取可执行路径"
-          placement="top"
-        >
-          <span style="color: rgba(0, 0, 0, 0.7)">chrome执行路径:</span>
+        <el-tooltip content="设备MAC地址" placement="top"
+          >
+          <span style="color: rgba(0, 0, 0, 0.7)">当前MAC地址:</span>
+         
         </el-tooltip>
-        <el-input v-model="chromeExecPath"></el-input>
+        <transition name="fade" mode="out-in">
+        <el-input v-model="macAdd" :disabled="true" style="width: 60%;"></el-input>
+      </transition>
       </div>
       <div class="Hright-bottom">
         <!-- 当前账号 -->
@@ -193,9 +188,7 @@ const tableData = ref([
   },
 ]);
 
-const chromeExecPath = ref(
-  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-);
+const macAdd = ref("00-00-00-00-00-00");
 const announcement = ref("暂无公告");
 
 const handleEdit = (index, row) => {
@@ -247,6 +240,7 @@ const isChromeInstalled = ref(false);
 onMounted(async () => {
   isChromeInstalled.value = await checkChromeInstalled();
   isXedgeInstalled.value = await checkXedgeInstalled();
+  macAdd.value = await ipcRenderer.invoke("getMac");
 });
 
 // 打开浏览器
@@ -294,7 +288,7 @@ const openChrome = () => {
   // border: 1px solid #000;
 }
 .Hright-senter {
-  height: 10%;
+  height: 13%;
   // border: 1px solid #000;
   // margin-top: 5px;
   display: flex;
@@ -304,12 +298,12 @@ const openChrome = () => {
 }
 .chrome-exec-path {
   height: 10%;
-  width: 87%;
-  margin-left: 22px;
+  width: 80%;
+  margin-left: 30px;
 }
 .Hright-bottom {
   height: 10%;
-  // margin-top: 5px;
+  margin-top: -15px;
   // border: 1px solid #000;
   display: flex;
   justify-content: space-around;
