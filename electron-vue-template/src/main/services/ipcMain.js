@@ -123,7 +123,7 @@ export default {
                         webviewTag: arg?.webview ?? false,
                         // 如果是开发模式可以使用devTools
                         devTools: process.env.NODE_ENV === 'development',//Q:如何关闭开发者工具A
-                        
+
                         // 在macos中启用橡皮动画
                         scrollBounce: process.platform === 'darwin',
                         // 临时修复打开新窗口报错
@@ -267,7 +267,7 @@ export default {
                         console.log('get weather api success:' + stdout);
                     }
                 });
-            }else{
+            } else {
                 //win
                 let cmd = `start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
@@ -307,9 +307,45 @@ export default {
                 }
             });
         });
+        //点击复制MAC地址
+        ipcMain.handle('copyMac', async (event, args) => {
+            return new Promise((resolve) => {
+                let mac;
+                if (process.platform === 'darwin') {
+                    //mac
+                    exec('ifconfig en0 | grep ether | awk \'{print $2}\'', (error, stdout) => {
+                        if (error) {
+                            resolve('获取mac地址失败');
+                        } else {
+                            mac = stdout.replace(/\n/g, '');
+                            exec(`echo ${mac} | pbcopy`, (error, stdout) => {
+                                if (error) {
+                                    resolve('复制mac地址失败');
+                                } else {
+                                    resolve('复制mac地址成功');
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    //windows
+                    exec('ipconfig /all | find "Physical Address"', (error, stdout) => {
+                        if (error) {
+                            resolve('获取mac地址失败');
+                        } else {
+                            mac = stdout.replace(/\n/g, '').replace(/ /g, '').split(':')[1];
+                            exec(`echo ${mac} | clip`, (error, stdout) => {
+                                if (error) {
+                                    resolve('复制mac地址失败');
+                                } else {
+                                    resolve('复制mac地址成功');
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
         
-
-
-
     }
 }

@@ -91,14 +91,19 @@
         </div>
       </div>
       <div class="chrome-exec-path">
-        <el-tooltip content="设备MAC地址" placement="top"
-          >
-          <span style="color: rgba(0, 0, 0, 0.7)">当前MAC地址:</span>
-         
+        <el-tooltip content="当前设备MAC地址" placement="top">
+          <span style="color: rgba(0, 0, 0, 0.7);font-size: small;">MAC地址:</span>
         </el-tooltip>
         <transition name="fade" mode="out-in">
-        <el-input v-model="macAdd" :disabled="true" style="width: 60%;"></el-input>
-      </transition>
+          <el-input
+            v-model="macAdd"
+            :disabled="true"
+            style="width: 60%"
+          ></el-input>
+        </transition>
+        <el-button type="primary" size="mini" icon="el-icon-document-copy" circle @click="copyMacAdd"
+          ></el-button
+        >
       </div>
       <div class="Hright-bottom">
         <!-- 当前账号 -->
@@ -189,6 +194,13 @@ const tableData = ref([
 ]);
 
 const macAdd = ref("00-00-00-00-00-00");
+//点击复制mac地址
+const copyMacAdd = () => {
+  //copyMac
+  ipcRenderer.invoke("copyMac", macAdd.value).then((res) => {
+    console.log(res);
+  });
+};
 const announcement = ref("暂无公告");
 
 const handleEdit = (index, row) => {
@@ -288,7 +300,7 @@ const openChrome = () => {
   // border: 1px solid #000;
 }
 .Hright-senter {
-  height: 13%;
+  height: 10%;
   // border: 1px solid #000;
   // margin-top: 5px;
   display: flex;
@@ -300,6 +312,9 @@ const openChrome = () => {
   height: 10%;
   width: 80%;
   margin-left: 30px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 .Hright-bottom {
   height: 10%;
