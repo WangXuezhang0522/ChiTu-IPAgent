@@ -9,13 +9,13 @@
         <el-table-column label="网点名称" width="300">
           <template slot-scope="scope">
             <i class="el-icon-box"></i>
-            <span style="margin-left: 10px">{{ scope.row.name }}</span>
+            <span style="margin-left: 10px">{{ scope.row.network_name }}</span>
           </template>
         </el-table-column>
         <el-table-column label="直连设备" width="300">
           <template slot-scope="scope">
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.equipment }}</el-tag>
+              <el-tag size="medium">{{ scope.row.device_id }}</el-tag>
             </div>
           </template>
         </el-table-column>
@@ -92,7 +92,9 @@
       </div>
       <div class="chrome-exec-path">
         <el-tooltip content="当前设备MAC地址" placement="top">
-          <span style="color: rgba(0, 0, 0, 0.7);font-size: small;">MAC地址:</span>
+          <span style="color: rgba(0, 0, 0, 0.7); font-size: small"
+            >MAC地址:</span
+          >
         </el-tooltip>
         <transition name="fade" mode="out-in">
           <el-input
@@ -101,9 +103,15 @@
             style="width: 60%"
           ></el-input>
         </transition>
-        <el-button type="primary" size="mini" icon="el-icon-document-copy" circle @click="copyMacAdd"
-          ></el-button
-        >
+        <el-tooltip content="复制MAC地址" placement="top">
+          <el-button
+            type="primary"
+            size="mini"
+            icon="el-icon-document-copy"
+            circle
+            @click="copyMacAdd"
+          ></el-button>
+        </el-tooltip>
       </div>
       <div class="Hright-bottom">
         <!-- 当前账号 -->
@@ -123,75 +131,42 @@
 import { ref, onMounted } from "vue";
 import router from "../../router";
 import { ipcRenderer } from "electron";
+import { getNotice } from "../../api/getNotice";
+import { getAccountAgentBind } from "../../api/getAccountAgentBind";
 
 const tableData = ref([
   {
-    name: "重庆渝北",
-    equipment: "重庆 杨家坪[100.64.0.2]",
-    network_name_dir: "ykf001",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆渝中",
-    equipment: "设备2",
-    network_name_dir: "ykf002",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆巴南",
-    equipment: "设备3",
-    network_name_dir: "ykf003",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备4",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
-  },
-  {
-    name: "重庆江北",
-    equipment: "设备5",
-    network_name_dir: "ykf004",
-    proxy: "100.64.0.1",
+    network_name: "重庆渝北",
+    device_id: "重庆 杨家坪[100.64.0.2]",
+    account_name: "ykf001",
+    network_code: "100.64.0.1",
   },
 ]);
+
+const getTableData = async () => {
+  try {
+    const requestData = { MacID: macAdd.value };
+    const res = await getAccountAgentBind(requestData);
+
+    // 检查返回的数据是否是对象
+    if (res.data && typeof res.data.data === 'object') {
+      // 将对象转换为数组
+      const dataObject = res.data.data;
+      tableData.value = [{
+        network_name: dataObject.network_name,
+        device_id: `device_id ${dataObject.device_id}`, // 根据需要格式化
+        account_name: dataObject.account_name,
+        network_code: dataObject.network_code,
+      }];
+    } else {
+      console.warn("返回的数据格式不正确");
+      tableData.value = []; // 如果格式不正确，设置为空数组
+    }
+  } catch (error) {
+    console.error("获取数据失败:", error);
+    tableData.value = []; // 处理错误时也设置为空数组
+  }
+};
 
 const macAdd = ref("00-00-00-00-00-00");
 //点击复制mac地址
@@ -201,11 +176,8 @@ const copyMacAdd = () => {
     console.log(res);
   });
 };
-const announcement = ref("暂无公告");
 
-const handleEdit = (index, row) => {
-  console.log(index, row);
-};
+const announcement = ref("暂无公告");
 //刷新数据
 const reloadData = () => {
   //重新获取数据
@@ -253,6 +225,12 @@ onMounted(async () => {
   isChromeInstalled.value = await checkChromeInstalled();
   isXedgeInstalled.value = await checkXedgeInstalled();
   macAdd.value = await ipcRenderer.invoke("getMac");
+  // 获取数据
+  getTableData();
+  // 获取公告
+  getNotice().then((res) => {
+    announcement.value = res.data.data;
+  });
 });
 
 // 打开浏览器
