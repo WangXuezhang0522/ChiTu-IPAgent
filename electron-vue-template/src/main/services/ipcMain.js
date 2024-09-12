@@ -172,14 +172,34 @@ export default {
         //判断是否安装了xedge,xedge进程是否存在
         ipcMain.handle('is-xedge-installed', async (event) => {
             return new Promise((resolve) => {
-                exec('tasklist', (error, stdout) => {
+                let command;
+        
+                // 根据操作系统选择命令
+                switch (os.platform()) {
+                    case 'win32': // Windows
+                        command = 'tasklist';
+                        break;
+                    case 'darwin': // macOS
+                        command = 'ps aux | grep xedge';
+                        break;
+                    case 'linux': // Linux
+                        command = 'ps aux | grep xedge';
+                        break;
+                    default:
+                        resolve(false); // 不支持的操作系统
+                        return;
+                }
+        
+                exec(command, (error, stdout) => {
                     if (error) {
                         resolve(false);
                     } else {
-                        if (stdout.includes('xedge.exe')) {
-                            resolve(true);
+                        // Windows 的处理
+                        if (os.platform() === 'win32') {
+                            resolve(stdout.includes('xedge.exe'));
                         } else {
-                            resolve(false);
+                            // macOS 和 Linux 的处理
+                            resolve(stdout.includes('xedge'));
                         }
                     }
                 });
@@ -233,8 +253,9 @@ export default {
         ipcMain.handle('open-browser', (event, args) => {
             console.log('open-browser', args)
             let userDir = app.getPath('userData')
-            let userPath = path.join(userDir, args.network_name_dir)
+            let userPath = path.join(userDir, args.network_name)
             console.log('userPath', userPath)
+            console.log('args', args.proxy)
             // 检查是否存在用户目录,如果不存在则创建
             if (!fs.existsSync(userPath)) {
                 fs.mkdirSync(userPath, { recursive: true });
@@ -249,7 +270,8 @@ export default {
             //判断当前系统是win还是mac或者linux
             if (process.platform === 'darwin') {
                 //mac
-                let cmd = `open -na "Google Chrome" --args --user-data-dir="${userPath}" "https://tool.lu/ip/"`
+                let cmd = `open -na "Google Chrome" --args --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" "https://tool.lu/ip/"
+`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);
@@ -259,7 +281,7 @@ export default {
                 });
             } else if (process.platform === 'linux') {
                 //linux
-                let cmd = `google-chrome --user-data-dir="${userPath}" "https://tool.lu/ip/"`
+                let cmd = `google-chrome --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);
@@ -269,7 +291,7 @@ export default {
                 });
             } else {
                 //win
-                let cmd = `start chrome  --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
+                let cmd = `start chrome  --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);

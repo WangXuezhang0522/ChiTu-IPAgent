@@ -15,7 +15,7 @@
         <el-table-column label="直连设备" width="300">
           <template slot-scope="scope">
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.device_id }}</el-tag>
+              <el-tag size="medium">{{ scope.row.device_name }}</el-tag>
             </div>
           </template>
         </el-table-column>
@@ -139,7 +139,7 @@ const tableData = ref([
     network_name: "重庆渝北",
     device_id: "重庆 杨家坪[100.64.0.2]",
     account_name: "ykf001",
-    network_code: "100.64.0.1",
+    proxy: "100.64.0.1",
   },
 ]);
 
@@ -147,16 +147,17 @@ const getTableData = async () => {
   try {
     const requestData = { MacID: macAdd.value };
     const res = await getAccountAgentBind(requestData);
-
+    console.log("获取数据成功:", res.data.data);
     // 检查返回的数据是否是对象
     if (res.data && typeof res.data.data === 'object') {
       // 将对象转换为数组
-      const dataObject = res.data.data;
+      const dataObject = res.data.data.data;
+      const device_name = res.data.data.device_name;
       tableData.value = [{
         network_name: dataObject.network_name,
-        device_id: `device_id ${dataObject.device_id}`, // 根据需要格式化
+        device_name: device_name , // 根据需要格式化
         account_name: dataObject.account_name,
-        network_code: dataObject.network_code,
+        proxy: dataObject.network_code,
       }];
     } else {
       console.warn("返回的数据格式不正确");
@@ -166,7 +167,7 @@ const getTableData = async () => {
     console.error("获取数据失败:", error);
     tableData.value = []; // 处理错误时也设置为空数组
   }
-};
+}; 
 
 const macAdd = ref("00-00-00-00-00-00");
 //点击复制mac地址
@@ -181,7 +182,12 @@ const announcement = ref("暂无公告");
 //刷新数据
 const reloadData = () => {
   //重新获取数据
-  console.log("reloadData");
+  try {
+    getTableData();
+    console.log("刷新数据成功");
+  } catch (error) {
+    console.error("刷新数据失败:", error);
+  }
 };
 
 // const username = localStorage.getItem("username");
@@ -226,22 +232,30 @@ onMounted(async () => {
   isXedgeInstalled.value = await checkXedgeInstalled();
   macAdd.value = await ipcRenderer.invoke("getMac");
   // 获取数据
-  getTableData();
+  try {
+    getTableData();
+  } catch (error) {
+    console.error("获取数据失败:", error);
+  }
   // 获取公告
-  getNotice().then((res) => {
+  try {
+    const res = await getNotice();
     announcement.value = res.data.data;
-  });
+  } catch (error) {
+    console.error("获取公告失败:", error);
+  }
 });
 
 // 打开浏览器
 const openBrowser = (row) => {
-  console.log("openBrowser", row);
+  
   let sendData = {
     ...row,
-    chromeExecPath: chromeExecPath.value,
+    // chromeExecPath: chromeExecPath.value,
   };
+  console.log("sendData", sendData);
   ipcRenderer.invoke("open-browser", sendData).then((res) => {
-    console.log(res);
+    console.log("res",res);
   });
 };
 
