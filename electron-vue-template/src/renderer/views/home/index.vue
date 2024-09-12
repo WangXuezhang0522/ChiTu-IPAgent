@@ -137,7 +137,7 @@ import { getAccountAgentBind } from "../../api/getAccountAgentBind";
 const tableData = ref([
   {
     network_name: "重庆渝北",
-    device_id: "重庆 杨家坪[100.64.0.2]",
+    device_name: "重庆 杨家坪[100.64.0.2]",
     account_name: "ykf001",
     proxy: "100.64.0.1",
   },
@@ -147,18 +147,34 @@ const getTableData = async () => {
   try {
     const requestData = { MacID: macAdd.value };
     const res = await getAccountAgentBind(requestData);
-    console.log("获取数据成功:", res.data.data);
+    // console.log("获取数据成功:", res.data.data);
+    // console.log("获取数据成功type:", typeof res.data.data.data);
     // 检查返回的数据是否是对象
     if (res.data && typeof res.data.data === 'object') {
       // 将对象转换为数组
       const dataObject = res.data.data.data;
-      const device_name = res.data.data.device_name;
-      tableData.value = [{
-        network_name: dataObject.network_name,
-        device_name: device_name , // 根据需要格式化
-        account_name: dataObject.account_name,
-        proxy: dataObject.network_code,
-      }];
+      console.log("dataObject", dataObject[0]);
+      const device_name = res.data.data.deviceData;
+      console.log("device_name", device_name[0].device_name);
+      const tableDataArray = [];
+      for (const key in dataObject) {
+        if (Object.hasOwnProperty.call(dataObject, key)) {
+          const element = dataObject[key];
+          //根据element中的device_id与device_name中的id进行匹配
+          let deviceName = device_name.find((item) => {
+            return item.id === element.device_id;
+          });
+
+          tableDataArray.push({
+            network_name: element.network_name,
+            device_name: deviceName.device_name,
+            account_name: element.account_name,
+            proxy: element.network_code,
+          });
+        }
+      }
+      tableData.value = tableDataArray;
+      console.log("tableData", tableData.value);
     } else {
       console.warn("返回的数据格式不正确");
       tableData.value = []; // 如果格式不正确，设置为空数组

@@ -270,8 +270,7 @@ export default {
             //判断当前系统是win还是mac或者linux
             if (process.platform === 'darwin') {
                 //mac
-                let cmd = `open -na "Google Chrome" --args --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" "https://tool.lu/ip/"
-`
+                let cmd = `open -na "Google Chrome" --args --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);
