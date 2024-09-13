@@ -254,6 +254,7 @@ export default {
             console.log('open-browser', args)
             let userDir = app.getPath('userData')
             let userPath = path.join(userDir, args.network_name)
+            const extension = path.join(__static, '/赤兔AI同步助手v2.3-extension-1.0.0-draft');
             console.log('userPath', userPath)
             console.log('args', args.proxy)
             // 检查是否存在用户目录,如果不存在则创建
@@ -270,7 +271,7 @@ export default {
             //判断当前系统是win还是mac或者linux
             if (process.platform === 'darwin') {
                 //mac
-                let cmd = `open -na "Google Chrome" --args --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" "https://tool.lu/ip/"`
+                let cmd = `open -na "Google Chrome" --args --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);

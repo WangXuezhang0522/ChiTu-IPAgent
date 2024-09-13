@@ -6,7 +6,7 @@ build/win-ia32-unpacked/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
+static/赤兔AI同步助手v2.3-extension-1.0.0-draft
 # Editor directories and files
 .idea
 .vscode
