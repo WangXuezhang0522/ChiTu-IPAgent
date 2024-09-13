@@ -254,6 +254,7 @@ export default {
             console.log('open-browser', args)
             let userDir = app.getPath('userData')
             let userPath = path.join(userDir, args.network_name)
+            //浏览器插件地址
             const extension = path.join(__static, '/赤兔AI同步助手v2.3-extension-1.0.0-draft');
             console.log('userPath', userPath)
             console.log('args', args.proxy)
@@ -263,11 +264,6 @@ export default {
             }
             // 执行命令
             const exec = require('child_process').exec;
-
-            // 如果外部传入了 chromeExecPath 则使用下面的启动命令
-            // start "C:\Program Files\Google\Chrome\Application\chrome.exe" --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\chitu\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"
-            // 如果没有传入 chromeExecPath 则使用下面的启动命令
-            // start chrome --proxy-server="socks5://100.64.0.43:1080" --proxy-server="socks5://100.64.0.43:1080" --user-data-dir="D:\chitu\user1" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"
             //判断当前系统是win还是mac或者linux
             if (process.platform === 'darwin') {
                 //mac
@@ -281,7 +277,7 @@ export default {
                 });
             } else if (process.platform === 'linux') {
                 //linux
-                let cmd = `google-chrome --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" "https://tool.lu/ip/"`
+                let cmd = `google-chrome --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);
@@ -291,7 +287,7 @@ export default {
                 });
             } else {
                 //win
-                let cmd = `start chrome  --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}"  "https://tool.lu/ip/"`
+                let cmd = `start chrome  --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);

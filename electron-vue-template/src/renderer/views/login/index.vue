@@ -6,17 +6,26 @@
     </div>
     <div class="right">
       <div class="top"></div>
-      <div class="form-wrappepr" ref="loginFormRef"> 
+      <div class="form-wrappepr" ref="loginFormRef">
         <h1 class="logo-name">赤兔IP代理助手</h1>
 
-        <input name="username" type="text" class="inputs user" 
+        <input
+          name="username"
+          type="text"
+          class="inputs user"
           v-model="loginForm.username"
-           autocomplete="on" placeholder="请输入账号" />
-        <input name="password" class="inputs pwd" 
+          autocomplete="on"
+          placeholder="请输入账号"
+        />
+        <input
+          name="password"
+          class="inputs pwd"
           type="password "
-          @keyup.enter="handleLogin" 
+          @keyup.enter="handleLogin"
           v-model="loginForm.password"
-          autocomplete="on" placeholder="请输入密码" />
+          autocomplete="on"
+          placeholder="请输入密码"
+        />
 
         <button @click="handleLogin">登录</button>
       </div>
@@ -26,8 +35,9 @@
 
 <script setup>
 import { useUserStore } from "@/store/user";
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "@/hooks/use-router";
+import { toLogin } from "../../api/login";
 
 const { login } = useUserStore();
 
@@ -39,41 +49,65 @@ const loginForm = ref({
 const router = useRouter();
 
 const handleLogin = () => {
-  //将用户名,密码放入到localstorage中
-  localStorage.setItem("username", loginForm.value.username);
-  localStorage.setItem("password", loginForm.value.password);
-  //设置一个登录状态
-  sessionStorage.setItem("isLogin", true);
-  console.log("loginForm");
-  //跳转到首页
-  login(loginForm.value).then(() => {
-        
-        router.push({ path: "/" }).catch((err) => { });
-      }).catch(() => { 
-        
-      })
+  //判断用户名和密码是否为空
+  if (!loginForm.value.username || !loginForm.value.password) {
+    alert("用户名和密码不能为空");
+    return;
+  }
+  console.log("loginForm", loginForm.value);
+
+
+
+  //toLogin登录验证
+  try {
+    toLogin(loginForm.value).then((res) => {
+      if (res.data.success === true) {
+        //将用户名,密码放入到localstorage中
+        localStorage.setItem("username", loginForm.value.username);
+        localStorage.setItem("password", loginForm.value.password);
+        localStorage.setItem("realname", loginForm.value.realname);
+        //设置一个登录状态
+        sessionStorage.setItem("isLogin", true);
+        console.log("loginForm");
+        //跳转到首页
+        login(loginForm.value)
+          .then(() => {
+            router.push({ path: "/" }).catch((err) => {});
+          })
+          .catch(() => {});
+      } else {
+        alert(res.data.message);
+      }
+    });
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 onMounted(() => {
-  document.querySelector(".people").addEventListener('animationend', function () {
-    this.classList.remove('p-animtion');
-    this.classList.add('p-other-animtion')
-  });
-  document.querySelector(".sphere").addEventListener('animationend', function () {
-    this.classList.remove('s-animtion');
-    this.classList.add('s-other-animtion')
-  });
+  document
+    .querySelector(".people")
+    .addEventListener("animationend", function () {
+      this.classList.remove("p-animtion");
+      this.classList.add("p-other-animtion");
+    });
+  document
+    .querySelector(".sphere")
+    .addEventListener("animationend", function () {
+      this.classList.remove("s-animtion");
+      this.classList.add("s-other-animtion");
+    });
 });
 </script>
 
 <style lang="scss" scoped>
 @import "login_style.css";
 .logo-name {
-  font-weight: bold; 
-  background: linear-gradient(to right, rgb(70, 130, 233), rgb(240, 99, 191)); 
-  -webkit-background-clip: text; 
-  background-clip: text; 
-  -webkit-text-fill-color: transparent; 
-  display: inline-block; 
+  font-weight: bold;
+  background: linear-gradient(to right, rgb(70, 130, 233), rgb(240, 99, 191));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
 }
 </style> 
