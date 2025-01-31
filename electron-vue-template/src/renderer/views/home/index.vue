@@ -1,6 +1,7 @@
 <template>
   <div class="content">
     <div class="Hleft">
+      <transition name="fade" mode="out-in">
       <el-table
         :data="tableData"
         style="width: 100%; height: 100%; border-radius: 2%"
@@ -37,6 +38,7 @@
           </template>
         </el-table-column>
       </el-table>
+      </transition>
     </div>
     <div class="Hright">
       <div class="Hright-top">
@@ -134,14 +136,7 @@ import { ipcRenderer } from "electron";
 import { getNotice } from "../../api/getNotice";
 import { getAccountAgentBind } from "../../api/getAccountAgentBind";
 
-const tableData = ref([
-  {
-    network_name: "重庆渝北",
-    device_name: "重庆 杨家坪[100.64.0.2]",
-    account_name: "ykf001",
-    proxy: "100.64.0.1",
-  },
-]);
+const tableData = ref([]);
 
 const getTableData = async () => {
   try {
@@ -201,13 +196,14 @@ const reloadData = () => {
   try {
     getTableData();
     console.log("刷新数据成功");
+    
   } catch (error) {
     console.error("刷新数据失败:", error);
   }
 };
 
 // const username = localStorage.getItem("username");
-const username = "优客服001";
+const username = ref(localStorage.getItem("realname"));
 
 // 退出登录
 const handleLogout = () => {

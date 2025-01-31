@@ -55,9 +55,6 @@ const handleLogin = () => {
     return;
   }
   console.log("loginForm", loginForm.value);
-
-
-
   //toLogin登录验证
   try {
     toLogin(loginForm.value).then((res) => {
@@ -65,7 +62,7 @@ const handleLogin = () => {
         //将用户名,密码放入到localstorage中
         localStorage.setItem("username", loginForm.value.username);
         localStorage.setItem("password", loginForm.value.password);
-        localStorage.setItem("realname", loginForm.value.realname);
+        localStorage.setItem("realname", res.data.data.realname);
         //设置一个登录状态
         sessionStorage.setItem("isLogin", true);
         console.log("loginForm");
@@ -80,7 +77,7 @@ const handleLogin = () => {
       }
     });
   } catch (e) {
-    console.log(e);
+    console.log(e); 
   }
 };
 
