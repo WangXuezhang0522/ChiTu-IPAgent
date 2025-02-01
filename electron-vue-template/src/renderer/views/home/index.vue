@@ -16,7 +16,7 @@
         <el-table-column label="直连设备" width="300">
           <template slot-scope="scope">
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.device_name }}</el-tag>
+              <el-tag size="medium">{{ scope.row.url }}</el-tag>
             </div>
           </template>
         </el-table-column>
@@ -135,6 +135,7 @@ import router from "../../router";
 import { ipcRenderer } from "electron";
 import { getNotice } from "../../api/getNotice";
 import { getAccountAgentBind } from "../../api/getAccountAgentBind";
+import{addUseLog} from "../../api/saveUseLog"
 
 const tableData = ref([]);
 
@@ -142,38 +143,28 @@ const getTableData = async () => {
   try {
     const requestData = { MacID: macAdd.value };
     const res = await getAccountAgentBind(requestData);
-    // console.log("获取数据成功:", res.data.data);
-    // console.log("获取数据成功type:", typeof res.data.data.data);
-    // 检查返回的数据是否是对象
-    if (res.data && typeof res.data.data === 'object') {
-      // 将对象转换为数组
-      const dataObject = res.data.data.data;
-      console.log("dataObject", dataObject[0]);
-      const device_name = res.data.data.deviceData;
-      console.log("device_name", device_name[0].device_name);
+    const MacID = await ipcRenderer.invoke("getMac");
+    const xedge_ip =await ipcRenderer.invoke("getIpAddress")
+    // console.log("获取数据成功:", res.data.data[1]);
+    let data = JSON.parse(JSON.stringify(res.data.data))
+    console.log("获取数据成功:", data);
       const tableDataArray = [];
-      for (const key in dataObject) {
-        if (Object.hasOwnProperty.call(dataObject, key)) {
-          const element = dataObject[key];
-          //根据element中的device_id与device_name中的id进行匹配
-          let deviceName = device_name.find((item) => {
-            return item.id === element.device_id;
-          });
-
+      for (const item of data) {
           tableDataArray.push({
-            network_name: element.network_name,
-            device_name: deviceName.device_name,
-            account_name: element.account_name,
-            proxy: element.network_code,
+            account_id:item.account_id,
+            network_name: item.network_name.network_name,
+            device_id:item.device_id,
+            customer_id:item.customer_id,
+            url: item.device.url,
+            account_name: item.account_name,
+            proxy: item.device.url+":"+item.device.port,
+            MacID:MacID,
+            xedge_ip:xedge_ip
           });
-        }
+      
       }
       tableData.value = tableDataArray;
       console.log("tableData", tableData.value);
-    } else {
-      console.warn("返回的数据格式不正确");
-      tableData.value = []; // 如果格式不正确，设置为空数组
-    }
   } catch (error) {
     console.error("获取数据失败:", error);
     tableData.value = []; // 处理错误时也设置为空数组
@@ -214,7 +205,7 @@ const handleLogout = () => {
     console.log("/login is err", err);
   });
 };
-//在页面加载时就判断Chrome是否安装,这是一个异步函数
+//在页面加载时就判断Chrome是否安装
 const checkChromeInstalled = async () => {
   try {
     const isInstalled = await ipcRenderer.invoke("is-chrome-installed");
@@ -269,6 +260,14 @@ const openBrowser = (row) => {
   ipcRenderer.invoke("open-browser", sendData).then((res) => {
     console.log("res",res);
   });
+  //保存使用记录
+  try {
+    addUseLog(sendData).then((res) => {
+      console.log("保存使用记录成功", res);
+    });
+  } catch (error) {
+    console.error("保存使用记录失败:", error);
+  }
 };
 
 // 打开xedge安装地址

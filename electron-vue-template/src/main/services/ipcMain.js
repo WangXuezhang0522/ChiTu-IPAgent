@@ -267,7 +267,7 @@ export default {
             //判断当前系统是win还是mac或者linux
             if (process.platform === 'darwin') {
                 //mac
-                let cmd = `open -na "Google Chrome" --args --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://tool.lu/ip/"`
+                let cmd = `open -na "Google Chrome" --args --proxy-server="socks5://${args.proxy}" --user-data-dir="${userPath}" --load-extension="${extension}" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);
@@ -364,6 +364,27 @@ export default {
                 }
             });
         });
+        //获取设备IP地址并返回,适配win和mac
+        ipcMain.handle('getIpAddress', async (event, args) => {
+            const networkInterfaces = os.networkInterfaces();
+            let ipAddress = '无法获取IP地址';
+
+            for (const interfaceName in networkInterfaces) {
+                const interfaces = networkInterfaces[interfaceName];
+                for (const iface of interfaces) {
+                    if (iface.family === 'IPv4' && !iface.internal) {
+                        ipAddress = iface.address;
+                        break;
+                    }
+                }
+                if (ipAddress !== '无法获取IP地址') {
+                    break;
+                }
+            }
+
+            return ipAddress;
+        });
+        
         
     }
 }

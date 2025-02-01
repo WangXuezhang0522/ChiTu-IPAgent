@@ -37,6 +37,7 @@
 import { useUserStore } from "@/store/user";
 import { ref, onMounted } from "vue";
 import { useRouter } from "@/hooks/use-router";
+import { ipcRenderer } from "electron";
 import { toLogin } from "../../api/login";
 
 const { login } = useUserStore();
@@ -48,12 +49,18 @@ const loginForm = ref({
 
 const router = useRouter();
 
-const handleLogin = () => {
+const handleLogin = async() => {
   //判断用户名和密码是否为空
   if (!loginForm.value.username || !loginForm.value.password) {
     alert("用户名和密码不能为空");
     return;
   }
+  
+  let xedge_ip =await ipcRenderer.invoke("getIpAddress")
+  let MacID =await ipcRenderer.invoke("getMac")
+  //将xdege_ip和MacID放入到loginForm中
+  loginForm.value.xedge_ip = xedge_ip;
+  loginForm.value.MacID = MacID;
   console.log("loginForm", loginForm.value);
   //toLogin登录验证
   try {
@@ -94,10 +101,14 @@ onMounted(() => {
       this.classList.remove("s-animtion");
       this.classList.add("s-other-animtion");
     });
-});
+   if(localStorage.getItem("username")&&localStorage.getItem("password")){
+    handleLogin()
+   }
+}); 
+
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" scoped> 
 @import "login_style.css";
 .logo-name {
   font-weight: bold;
