@@ -277,7 +277,7 @@ export default {
                 });
             } else if (process.platform === 'linux') {
                 //linux
-                let cmd = `google-chrome --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://tool.lu/ip/"`
+                let cmd = `google-chrome --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);
@@ -287,7 +287,7 @@ export default {
                 });
             } else {
                 //win
-                let cmd = `start chrome  --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://tool.lu/ip/"`
+                let cmd = `start chrome  --proxy-server="socks5://${args.proxy}:1080" --user-data-dir="${userPath}" --load-extension="${extension}" "https://wd.jtexpress.com.cn/" "https://tool.lu/ip/"`
                 exec(cmd, function (err, stdout, stderr) {
                     if (err) {
                         console.log('get weather api error:' + stderr);

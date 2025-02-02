@@ -78,7 +78,9 @@ const handleLogin = async() => {
           .then(() => {
             router.push({ path: "/" }).catch((err) => {});
           })
-          .catch(() => {});
+          .catch(() => {
+            console.log(err);
+          });
       } else {
         alert(res.data.message);
       }
@@ -101,9 +103,14 @@ onMounted(() => {
       this.classList.remove("s-animtion");
       this.classList.add("s-other-animtion");
     });
-   if(localStorage.getItem("username")&&localStorage.getItem("password")){
-    handleLogin()
-   }
+    // try{
+    //   if(localStorage.getItem("username")&&localStorage.getItem("password")){
+    //     handleLogin()
+    //   }
+    // }catch(e){
+    //   console.log(e)
+    // }
+   
 }); 
 
 </script>

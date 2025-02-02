@@ -80,7 +80,7 @@ function loadingWindow() {
 
   loadWindow.loadURL(loadingURL)
 
-  loadWindow.show()
+  // loadWindow.show()
 
   setTimeout(() => {
     createMainWindow()

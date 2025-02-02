@@ -1,5 +1,5 @@
 {
-  "name": "electron-vue-admin",
+  "name": "赤兔IP代理助手",
   "version": "0.0.1",
   "author": "sky <https://github.com/umbrella22>",
   "description": "An electron-vue project",
@@ -51,15 +51,15 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "static/icons/icon.ico"
     },
     "win": {
-      "icon": "build/icons/icon.ico",
+      "icon": "static/icons/icon.ico",
       "target": "nsis"
     },
     "linux": {
       "target": "deb",
-      "icon": "build/icons"
+      "icon": "static/icons/icon.ico"
     }
   },
   "dependencies": {
